@@ -1,0 +1,25 @@
+# config/config.yaml
+
+models:
+  embedding_repo_id: "sentence-transformers/all-MiniLM-L6-v2"
+  llm_repo_id: "google/gemma-2-9b-it"
+  
+  embedding_local_path: "models/embedding_model"
+  llm_local_path: "models/llm_model"
+
+data:
+  excel_path: "data/Movie_Web_Chatbot_AI.xlsx"
+  knowledge_base_sheet: "ANIME_INFO"
+  recommendations_sheet: "RECOMMENDATIONS"
+  faq_sheet: "FAQ_TECHNICAL"
+  quick_answers_sheet: "QUICK_ANSWERS"
+  watch_order_sheet: "WATCH_ORDER"
+  
+  embeddings_path: "data/processed/anime_embeddings.faiss"
+  index_to_id_path: "data/processed/index_to_id.json"
+
+retriever:
+  top_k: 3
+
+logging:
+  log_dir: "logs"

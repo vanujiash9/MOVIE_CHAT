@@ -1,0 +1,21 @@
+# requirements.txt (Tối ưu cho Gemma-2 với Quantization trên Windows)
+
+# Bắt buộc dùng NumPy phiên bản cũ hơn 2.0
+numpy<2.0
+
+# Core ML & NLP Libraries
+torch
+transformers
+accelerate
+bitsandbytes
+sentence-transformers
+faiss-cpu # Hoặc faiss-gpu nếu bạn cài được
+pandas
+
+# Web & Interface
+gradio
+
+# Data & Config
+pyyaml
+openpyxl
+python-dotenv
