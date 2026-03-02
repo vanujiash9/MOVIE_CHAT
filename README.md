@@ -1,116 +1,190 @@
-# 🎌 AniBot V2 - Trợ Lý AI Chuyên Sâu Về Anime & Manga
 
-[![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python)](https://www.python.org/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.1-orange?style=for-the-badge&logo=pytorch)](https://pytorch.org/)
-[![Gradio](https://img.shields.io/badge/Gradio-4.10-green?style=for-the-badge&logo=gradio)](https://www.gradio.app/)
-[![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-yellow)](https://huggingface.co/spaces)
+```markdown
+# 🎌 AniBot V2 — Trợ Lý AI cho Anime & Manga
 
-**AniBot** là một dự án chatbot thông minh, được xây dựng để trở thành một chuyên gia về thế giới anime và manga. Sử dụng kiến trúc **RAG (Retrieval-Augmented Generation)**, AniBot có khả năng kết hợp một cơ sở kiến thức tùy chỉnh (từ file Excel) với sức mạnh của các Mô hình Ngôn ngữ Lớn (LLM) hiện đại như `google/gemma-2-9b-it` để đưa ra những câu trả lời chính xác, chi tiết và tự nhiên.
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.1-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![Gradio](https://img.shields.io/badge/Gradio-4.10-00C853?style=for-the-badge&logo=gradio&logoColor=white)](https://www.gradio.app/)
+[![Hugging Face](https://img.shields.io/badge/🤗%20HuggingFace-Spaces-FFD21E?style=for-the-badge)](https://huggingface.co/spaces)
+
+> 🤖 Chatbot AI chuyên sâu về **Anime & Manga**  
+> 🧠 Kiến trúc **RAG** + LLM (Gemma 2 9B)  
+> 🎯 Ứng dụng: tra cứu, gợi ý, tóm tắt, thảo luận anime/manga
 
 ---
 
-## 🖼️ Giao Diện Demo
+## ✨ Tính năng chính
 
-Giao diện được xây dựng bằng Gradio với CSS tùy chỉnh, mang lại trải nghiệm tương tác thân thiện, hiện đại và responsive trên mọi thiết bị.
+### 🔹 Khả năng cốt lõi
 
-| Giao diện chính | Cuộc hội thoại ví dụ |
+- 📚 **RAG-based retrieval** với FAISS (truy xuất ngữ nghĩa từ tri thức anime/manga)  
+- 🧠 Sinh câu trả lời với **Gemma 2 – 9B (instruction-tuned)**  
+- 📊 Cơ sở tri thức tùy chỉnh từ file **Excel/CSV**  
+- 💾 **4-bit quantization** (bitsandbytes) – tối ưu VRAM, chạy được trên GPU 16GB  
+- 🌐 Giao diện **Gradio UI** hiện đại, dễ dùng, dễ deploy lên Hugging Face Spaces
+
+### 🎮 Use case tiêu biểu
+
+- 🔍 Tra cứu thông tin anime/manga (studio, năm, thể loại, nhân vật…)  
+- 🎯 Gợi ý anime theo sở thích (thể loại, mood, độ dài, artstyle)  
+- 📖 Tóm tắt nội dung, giới thiệu nhân vật, giải thích lore/thế giới  
+- 💬 Hỏi đáp, “tám” về anime/manga dựa trên tri thức đã được index
+
+---
+
+## 🖼️ Demo giao diện
+
+| 🏠 Trang chính | 💬 Ví dụ hội thoại |
 | :---: | :---: |
-| ![Giao diện chính của AniBot](https://github.com/user-attachments/assets/5189f7f4-d50c-4389-9e8c-57c9dfd39a3f) | ![Ví dụ hội thoại với AniBot](https://github.com/user-attachments/assets/b343c5b5-7836-4148-be28-a83d3408f9ac) |
+| ![Main UI](https://github.com/user-attachments/assets/5189f7f4-d50c-4389-9e8c-57c9dfd39a3f) | ![Chat Example](https://github.com/user-attachments/assets/b343c5b5-7836-4148-be28-a83d3408f9ac) |
 
 ---
 
-## ⚡ Bắt Đầu Nhanh (Sử Dụng Model Đã Tải Sẵn)
+## ⚙️ Yêu cầu hệ thống
 
-Để tiết kiệm thời gian và băng thông, bạn có thể tải về bộ model đã được chuẩn bị sẵn, bao gồm `google/gemma-2-9b-it` và model embedding (tổng dung lượng ~18GB).
-
-1.  **Tải Model:** Tải file `models.zip` từ link Google Drive sau:
-    > **[🔗 Tải Bộ Models (18GB+) Tại Đây]**
-    > (https://drive.google.com/drive/folders/1L5tVq8qTbOgABFLb4pfX1nJFJ9myRXv8?usp=sharing)
-
-2.  **Giải Nén:** Giải nén file `models.zip` và đặt thư mục `models` vào thư mục gốc của dự án.
-3.  **Bỏ Qua Bước Tải:** Khi thực hiện theo hướng dẫn cài đặt bên dưới, bạn có thể **bỏ qua bước `python3 src/scripts/download_models.py`**.
+- 🧮 GPU: NVIDIA ≥ **16GB VRAM** (đã dùng 4-bit quantization)  
+- 💽 Ổ đĩa trống: ≥ **25GB** (model + index + dữ liệu)  
+- 🧪 Khuyến nghị:
+  - Chuẩn bị dữ liệu: **Google Colab**
+  - Triển khai lâu dài: **GPU server (RTX 3090/4090)** hoặc **Hugging Face Spaces**
 
 ---
 
-## ⚠️ Yêu Cầu Hệ Thống
+## ⚡ Khởi động nhanh (dùng bộ model tải sẵn)
 
-Dự án này sử dụng các LLM có dung lượng rất lớn.
-- **VRAM:** Yêu cầu GPU NVIDIA với ít nhất **16 GB VRAM** để chạy ở chế độ lượng tử hóa 4-bit.
-- **Dung lượng ổ đĩa:** Cần ít nhất 25 GB dung lượng trống.
-- **Khuyến nghị:**
-    - **Để chuẩn bị dữ liệu:** Sử dụng **Google Colab** để tận dụng tốc độ mạng cao.
-    - **Để triển khai:** **Thuê một GPU Server** (ví dụ: RTX 3090/4090, RTX A4000...) hoặc triển khai trên **Hugging Face Spaces**.
+### 1️⃣ Tải models
 
----
+🔗 Link tải:  
+https://drive.google.com/drive/folders/1L5tVq8qTbOgABFLb4pfX1nJFJ9myRXv8?usp=sharing
 
-## ✨ Tính Năng & Kiến Trúc
+### 2️⃣ Giải nén
 
-### Tính Năng Nổi Bật
-- **Hệ Thống Trả Lời Đa Tầng:** Xử lý câu hỏi qua nhiều lớp logic để đưa ra câu trả lời phù hợp nhất.
-- **Truy Xuất Thông Tin Thông Minh (RAG):** Sử dụng `sentence-transformers` và `FAISS` để tìm kiếm thông tin dựa trên ngữ nghĩa.
-- **Sinh Văn Bản Nâng Cao:** Tận dụng sức mạnh của `google/gemma-2-9b-it` để diễn giải thông tin và tạo ra các câu trả lời tự nhiên.
-- **Cơ Sở Kiến Thức Tùy Chỉnh:** Dễ dàng mở rộng kiến thức cho bot bằng cách cập nhật file `data/Movie_Web_Chatbot_AI.xlsx`.
-- **Tối Ưu Hóa Hiệu Năng:** Sử dụng kỹ thuật lượng tử hóa 4-bit (`bitsandbytes`) để chạy model lớn trên các GPU có VRAM hạn chế.
+Đặt thư mục `models/` vào thư mục gốc dự án:
 
-### Kiến Trúc Hệ Thống
-1.  **Data Layer (`src/data_utils`):** Tải và xử lý dữ liệu từ Excel.
-2.  **Core Logic (`src/core`):**
-    -   **`Retriever`:** Tìm kiếm ngữ nghĩa.
-    -   **`LLMHandler`:** Tương tác với LLM.
-    -   **`PromptManager`:** Quản lý và tạo prompt động.
-3.  **Chatbot Orchestrator (`src/chat_bot.py`):** Lớp chính, điều phối luồng xử lý.
-4.  **Presentation Layer (`gradio_app.py`):** Cung cấp giao diện người dùng.
-
----
-
-## 🚀 Hướng Dẫn Cài Đặt và Triển Khai
-
-Làm theo các bước sau để triển khai AniBot trên một server Linux (khuyến nghị Ubuntu 22.04) có GPU.
-
-### 1. Cài Đặt Môi Trường
-Mở Terminal và di chuyển vào thư mục gốc của dự án.
 ```bash
-# Cài đặt các công cụ build cần thiết (chỉ làm một lần)
-sudo apt-get update && sudo apt-get install -y build-essential
+AniBot/
+├── gradio_app.py
+├── models/        # <– đặt thư mục này ở đây
+└── ...
+```
 
-# Cài đặt tất cả các thư viện Python từ file requirements
+### 3️⃣ Bỏ qua bước download tự động
+
+Khi đã có `models/`, **không cần** chạy:
+
+```bash
+python3 src/scripts/download_models.py
+```
+
+---
+
+## 🏗️ Kiến trúc hệ thống
+
+```text
+📁 Data Layer (src/data_utils)
+        ↓
+🔎 Retriever (FAISS + Sentence Transformers)
+        ↓
+🧠 LLM Handler (Gemma-2-9B)
+        ↓
+📝 Prompt Manager
+        ↓
+🎛️ Chatbot Orchestrator
+        ↓
+🌐 Gradio UI
+```
+
+---
+
+## 🚀 Cài đặt & chạy
+
+### 1️⃣ Cài đặt phụ thuộc
+
+```bash
+sudo apt-get update && sudo apt-get install -y build-essential
 pip install -r requirements.txt
 ```
 
-### 2. Cấu Hình
-Mở file `login_helper.py`, dán token Hugging Face của bạn vào và chạy:
+### 2️⃣ Đăng nhập Hugging Face (nếu dùng model trên HF)
+
 ```bash
 python3 login_helper.py
 ```
-Hãy chắc chắn file `config/config.yaml` đã được cấu hình đúng.
 
-### 3. Chuẩn Bị Dữ Liệu & Models
-*(Bạn có thể bỏ qua `download_models` nếu đã tải từ link Google Drive ở trên)*
+Chỉnh `config/config.yaml` cho đúng (tên model, token, đường dẫn, v.v.).
+
+### 3️⃣ Chuẩn bị dữ liệu & models (nếu không dùng gói tải sẵn)
+
 ```bash
-# Tải models (bước này rất lâu)
+# Tải models (LLM + embedding)
 python3 src/scripts/download_models.py
 
-# Xây dựng index từ file Excel
+# Xây dựng index FAISS từ dữ liệu anime/manga
 python3 src/scripts/build_index.py
 ```
 
-### 4. Khởi Chạy Ứng Dụng
+### 4️⃣ Chạy ứng dụng
+
 ```bash
-# Chạy ứng dụng Gradio
 python3 gradio_app.py
 ```
-Gradio sẽ cung cấp một link công khai (`.gradio.live`) để bạn truy cập. Để ứng dụng chạy 24/7, hãy sử dụng `screen` hoặc `nohup`.
+
+- Gradio sẽ hiển thị link local (vd: http://127.0.0.1:7860)  
+- Nếu bật share, sẽ có link `.gradio.live`
+
+Chạy 24/7 trên server Linux:
+
+```bash
+# Cách 1: screen
+screen -S anibot
+python3 gradio_app.py
+
+# Cách 2: nohup
+nohup python3 gradio_app.py > anibot.log 2>&1 &
+```
 
 ---
 
-## 📬 Liên Hệ
+## 📂 Cấu trúc dự án (tóm tắt)
 
-- **Tác giả:** vanujiash9
-- **Email:** `thanh.van19062004@gmail.com`
-- **Facebook:** [https://www.facebook.com/gmail.com.vancutenemoinguoi196](https://www.facebook.com/gmail.com.vancutenemoinguoi196)
-
-## 🤝 Đóng Góp
-Mọi ý kiến đóng góp, báo lỗi, hoặc yêu cầu tính năng đều được chào đón. Vui lòng tạo một "Issue" hoặc "Pull Request" trên kho chứa GitHub này.
+```text
+AniBot/
+├── gradio_app.py          # Giao diện Gradio
+├── src/
+│   ├── core/              # Logic chatbot, orchestration
+│   ├── data_utils/        # Xử lý dữ liệu, xây index FAISS
+│   ├── scripts/           # Script tiện ích (tải model, build index, ...)
+│   └── chat_bot.py        # Định nghĩa luồng hội thoại
+├── config/                # File cấu hình (.yaml)
+├── models/                # Models (LLM, embedding, tokenizer, ...)
+└── data/                  # Dữ liệu anime/manga, index FAISS, ...
+```
 
 ---
-*Dự án được tạo bởi vanujiash9 - 2025*
+
+## 🔮 Hướng phát triển
+
+- 🧠 Bộ nhớ hội thoại dài (temporal memory, session-based)  
+- 🌍 Hỗ trợ đa ngôn ngữ (Anh – Việt – Nhật)  
+- 🎯 Fine-tuning / LoRA LLM cho domain anime/manga  
+- 🧩 Tách backend thành **API (FastAPI)** để tích hợp vào web/app/Discord bot
+
+---
+
+## 📬 Liên hệ & đóng góp
+
+**Tác giả**
+
+- 👤 Tên: **Thanh Vân**  
+- 💻 GitHub: https://github.com/vanujiash9  
+- 📧 Email: thanh.van19062004@gmail.com  
+- 📘 Facebook: https://www.facebook.com/gmail.com.vancutenemoinguoi196  
+
+**Đóng góp**
+
+- Fork repository  
+- Tạo branch mới cho tính năng/bugfix  
+- Gửi Pull Request kèm mô tả rõ ràng (mục tiêu, thay đổi, cách test)
+
+⭐ Nếu thấy dự án hữu ích, bạn có thể để lại một **Star** để ủng hộ.
+```
