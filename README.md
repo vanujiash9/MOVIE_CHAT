@@ -40,13 +40,9 @@ Thay vì gửi mọi câu hỏi trực tiếp đến mô hình ngôn ngữ, hệ
 
 <div align="center">
 
-![AniBot Demo](assets/anibot-demo.gif)
+![AniBot Demo]([assets/anibot-demo.gif](https://drive.google.com/drive/folders/1L5tVq8qTbOgABFLb4pfX1nJFJ9myRXv8))
 
 </div>
-
-> Đặt GIF demo tại `assets/anibot-demo.gif`. Nếu chưa có GIF, có thể dùng ảnh:
->
-> `![Giao diện AniBot](assets/anibot-interface.png)`
 
 ---
 
