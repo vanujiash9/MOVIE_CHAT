@@ -1,139 +1,296 @@
-# 🎌 AniBot V2 — The Ultimate Anime & Manga AI Assistant
+<div align="center">
 
-AniBot V2 là một **Chatbot AI chuyên sâu cho cộng đồng Anime & Manga**.  
-Ứng dụng kết hợp sức mạnh của **Gemma 2 9B** và kỹ thuật **RAG (Retrieval‑Augmented Generation)** để:
+# AniBot
 
-- Cung cấp thông tin chính xác
-- Tóm tắt cốt truyện, nhân vật, lore
-- Gợi ý anime/manga theo sở thích người dùng
+### Trợ lý AI tiếng Việt dành cho Anime và Manga
 
----
+AniBot kết hợp **RAG, FAISS và Gemma 2** để tra cứu thông tin, gợi ý Anime và hỗ trợ thứ tự xem bằng hội thoại tự nhiên.
 
-## ✨ Tính năng nổi bật
+[Demo](#demo) · [Tính năng](#tính-năng) · [Kiến trúc](#kiến-trúc) · [Cài đặt](#cài-đặt) · [Hướng phát triển](#hướng-phát-triển)
 
-- 🧠 **Smart Retrieval (RAG)**  
-  Sử dụng **FAISS** để truy xuất ngữ nghĩa từ cơ sở dữ liệu Anime/Manga tùy chỉnh (CSV/Excel).
+<br>
 
-- 🚀 **High Performance**  
-  Tối ưu hóa với **4-bit quantization** (bitsandbytes), chạy mượt trên GPU phổ thông (≥ 16GB VRAM).
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
+![PyTorch](https://img.shields.io/badge/PyTorch-2.x-EE4C2C?logo=pytorch&logoColor=white)
+![Transformers](https://img.shields.io/badge/Hugging%20Face-Transformers-FFD21E?logo=huggingface&logoColor=black)
+![Gemma](https://img.shields.io/badge/LLM-Gemma%202%209B-4285F4)
+![FAISS](https://img.shields.io/badge/Vector%20Search-FAISS-0467DF)
+![Gradio](https://img.shields.io/badge/UI-Gradio-F97316)
+![RAG](https://img.shields.io/badge/Architecture-RAG-7B61FF)
+![License](https://img.shields.io/badge/License-MIT-2EA44F)
 
-- 🔍 **Deep Domain Knowledge**  
-  Tra cứu chi tiết về **Studio, Nhân vật, Seiyuu, Lore**, v.v. và trả lời logic, có dẫn dắt.
-
-- 🎯 **Personalized Recommendation**  
-  Gợi ý anime/manga theo **sở thích, mood, artstyle** mà người dùng yêu cầu.
-
-- 🎨 **Modern UI**  
-  Giao diện **Gradio** thân thiện, hỗ trợ share link public nhanh chóng.
+</div>
 
 ---
 
-## 🛠 Kiến trúc hệ thống
+## Giới thiệu
 
-Dự án được thiết kế theo mô hình phân lớp, dễ mở rộng và bảo trì:
+**AniBot** là chatbot chuyên biệt về Anime và Manga, hỗ trợ người dùng tra cứu thông tin, tìm nội dung tương tự, xem thứ tự phát hành và nhận gợi ý bằng tiếng Việt.
 
-```mermaid
-graph TD
-    A[User Input] --> B[Gradio UI]
-    B --> C[Orchestrator]
-    C --> D[Embedding Model]
-    D --> E[FAISS Vector Store]
-    E --> F[Context Retrieval]
-    F --> G[Gemma 2 9B LLM]
-    G --> B
+Thay vì gửi mọi câu hỏi trực tiếp đến mô hình ngôn ngữ, hệ thống sử dụng **query routing** để lựa chọn cách xử lý phù hợp:
+
+- Trả lời trực tiếp bằng rule cho câu hỏi đơn giản
+- Truy xuất dữ liệu có cấu trúc cho recommendation và watch order
+- Tìm kiếm ngữ nghĩa bằng FAISS cho câu hỏi kiến thức
+- Sử dụng Gemma 2 để tạo câu trả lời tự nhiên từ context đã truy xuất
 
 ---
 
-## 💻 Yêu cầu hệ thống
+## Demo
 
-| Thành phần | Cấu hình tối thiểu           | Khuyến nghị                 |
-|-----------|------------------------------|-----------------------------|
-| GPU       | NVIDIA RTX 3060 (12–16GB)    | RTX 3090 / 4090 (24GB)      |
-| RAM       | 16 GB                        | 32 GB                       |
-| Disk      | 25 GB SSD                    | 50 GB SSD                   |
-| OS        | Ubuntu 20.04+ / Windows 11 (WSL2) | Linux (Dockerized)   |
+<div align="center">
+
+![AniBot Demo](assets/anibot-demo.gif)
+
+</div>
+
+> Đặt GIF demo tại `assets/anibot-demo.gif`. Nếu chưa có GIF, có thể dùng ảnh:
+>
+> `![Giao diện AniBot](assets/anibot-interface.png)`
 
 ---
 
-## 🚀 Hướng dẫn cài đặt
+## Tính năng
 
-### 1️⃣ Khởi tạo môi trường
+- Hỏi đáp về Anime và Manga bằng tiếng Việt
+- Semantic search với sentence embeddings
+- Vector retrieval bằng FAISS
+- Retrieval-Augmented Generation với Gemma 2 9B Instruct
+- Gợi ý Anime có nội dung tương tự
+- Tra cứu thứ tự xem của các series
+- Xử lý nhanh FAQ và câu hỏi đơn giản bằng rules
+- Quản lý context hội thoại
+- Lưu lịch sử và phương thức tạo câu trả lời
+- Giao diện web bằng Gradio
+
+---
+
+## Kiến trúc
+
+```text
+Người dùng
+   ↓
+Giao diện Gradio
+   ↓
+Query Router
+   ├── Greeting / FAQ ───────→ Rule-based Response
+   ├── Recommendation ───────→ Structured Data
+   ├── Watch Order ──────────→ Structured Data
+   └── Knowledge Query
+          ↓
+     Embedding Model
+          ↓
+     FAISS Vector Search
+          ↓
+     Relevant Context
+          ↓
+       RAG Prompt
+          ↓
+     Gemma 2 9B Instruct
+          ↓
+      Câu trả lời
+```
+
+---
+
+## Công nghệ sử dụng
+
+### Ngôn ngữ và định dạng
+
+| Công nghệ | Vai trò |
+|---|---|
+| Python | Xây dựng pipeline chatbot, xử lý dữ liệu, retrieval và inference |
+| YAML | Quản lý cấu hình model và đường dẫn |
+| JSON | Lưu tham số model và mapping dữ liệu |
+| Markdown | Viết tài liệu dự án |
+
+### AI và xử lý dữ liệu
+
+| Thành phần | Công nghệ |
+|---|---|
+| Large Language Model | Google Gemma 2 9B Instruct |
+| Embedding model | sentence-transformers/all-MiniLM-L6-v2 |
+| Vector search | FAISS |
+| Deep Learning | PyTorch |
+| LLM framework | Hugging Face Transformers |
+| Data processing | Pandas, OpenPyXL, NumPy |
+| Giao diện | Gradio |
+| Knowledge base | Microsoft Excel |
+| Kiến trúc | Retrieval-Augmented Generation |
+
+---
+
+## Cài đặt
+
+### 1. Clone repository
 
 ```bash
-# Clone project
-git clone https://github.com/vanujiash9/AniBot-V2.git
-cd AniBot-V2
+git clone https://github.com/vanujiash9/MOVIE_CHAT.git
+cd MOVIE_CHAT
+```
 
-# Cài đặt phụ thuộc
+### 2. Tạo môi trường ảo
+
+```bash
+python -m venv .venv
+```
+
+Windows:
+
+```bash
+.venv\Scripts\activate
+```
+
+Linux hoặc macOS:
+
+```bash
+source .venv/bin/activate
+```
+
+### 3. Cài đặt thư viện
+
+```bash
+python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 2️⃣ Chuẩn bị Models & Data
-
-**Cách 1 – Dùng bộ models đã đóng gói sẵn (khuyến nghị):**
-
-- Tải tại:  
-  https://drive.google.com/drive/folders/1L5tVq8qTbOgABFLb4pfX1nJFJ9myRXv8?usp=sharing  
-
-- Giải nén vào thư mục `models/` ngay tại gốc dự án:
-
-```bash
-AniBot/
-├── gradio_app.py
-├── models/       # <— đặt thư mục giải nén ở đây
-└── ...
-```
-
-**Cách 2 – Tự tải và build thủ công:**
-
-```bash
-python3 src/scripts/download_models.py
-python3 src/scripts/build_index.py
-```
-
 ---
 
-### 3️⃣ Khởi chạy ứng dụng
+## Chuẩn bị mô hình
+
+Chạy script tải model:
 
 ```bash
-python3 gradio_app.py
+python src/scripts/download_models.py
 ```
 
-- Gradio sẽ hiển thị đường dẫn local (vd: `http://127.0.0.1:7860`)  
-- Có thể bật share link public nếu cần demo nhanh
-
----
-
-## 📂 Cấu trúc dự án
+Các model mặc định:
 
 ```text
-AniBot/
-├── config/             # File cấu hình YAML (đường dẫn model, tham số, ...)
-├── data/               # Dataset gốc và index FAISS
-├── models/             # Lưu trữ LLM & embedding weights
-├── src/
-│   ├── core/           # Logic xử lý AI & RAG, orchestrator
-│   ├── data_utils/     # Pipeline xử lý dữ liệu, build index
-│   └── scripts/        # Script tiện ích (download, build_index, ...)
-└── gradio_app.py       # Entry point cho giao diện Gradio
+Embedding: sentence-transformers/all-MiniLM-L6-v2
+LLM: google/gemma-2-9b-it
+```
+
+> Gemma có thể yêu cầu đăng nhập Hugging Face và chấp nhận điều khoản sử dụng trước khi tải.
+
+---
+
+## Xây dựng FAISS index
+
+Đặt file dữ liệu tại:
+
+```text
+data/Movie_Web_Chatbot_AI.xlsx
+```
+
+Sau đó chạy:
+
+```bash
+python src/scripts/build_index.py
+```
+
+Các file index được tạo:
+
+```text
+data/processed/
+├── anime_embeddings.faiss
+└── index_to_id.json
 ```
 
 ---
 
-## 🔮 Lộ trình phát triển (Roadmap)
+## Chạy ứng dụng
 
-- [ ] 🌍 **Multi-language**: Hỗ trợ song ngữ Anh – Việt hoàn chỉnh  
-- [ ] 🧠 **Long-term Memory**: Ghi nhớ ngữ cảnh hội thoại theo từng phiên  
-- [ ] 🧩 **Integration**: Xây dựng API (FastAPI) để tích hợp với Discord Bot / Telegram Bot  
-- [ ] ⚡ **Optimization**: Fine‑tuning bằng LoRA để cá nhân hóa văn phong “wibu”
+```bash
+python gradio_app.py
+```
+
+Truy cập ứng dụng tại:
+
+```text
+http://localhost:7861
+```
 
 ---
 
-## 🤝 Liên hệ & đóng góp
+## Ví dụ câu hỏi
 
-Mọi đóng góp cho AniBot đều được hoan nghênh. Nếu bạn gặp lỗi hoặc có ý tưởng mới, hãy mở **Issue** hoặc gửi **Pull Request**.
+```text
+Jujutsu Kaisen nói về điều gì?
+```
 
-- 👤 Tác giả: **Thanh Vân**  
+```text
+Gợi ý Anime giống Attack on Titan.
+```
+
+```text
+Thứ tự xem Fate như thế nào?
+```
+
+```text
+Tôi thích Anime tâm lý, bí ẩn và có nhiều plot twist. Nên xem gì?
+```
+
+---
+
+## Cấu trúc dự án
+
+```text
+MOVIE_CHAT/
+├── config/
+│   ├── config.yaml
+│   └── model_config.json
+├── data/
+│   ├── Movie_Web_Chatbot_AI.xlsx
+│   └── processed/
+├── models/
+├── src/
+│   ├── core/
+│   ├── data_utils/
+│   └── scripts/
+├── assets/
+├── logs/
+├── gradio_app.py
+├── app.py
+├── main.py
+├── requirements.txt
+└── README.md
+```
+
+---
+
+## Hướng phát triển
+
+- [ ] Thêm similarity threshold cho retrieval
+- [ ] Hiển thị nguồn dữ liệu trong câu trả lời
+- [ ] Hỗ trợ quantization 4-bit hoặc 8-bit
+- [ ] Xây dựng REST API bằng FastAPI
+- [ ] Lưu hội thoại bằng SQLite hoặc PostgreSQL
+- [ ] Bổ sung bộ đánh giá retrieval và hallucination
+- [ ] Docker hóa ứng dụng
+- [ ] Triển khai lên cloud
+- [ ] Tích hợp Telegram hoặc Discord
+
+---
+
+## Tác giả
+
+GitHub: [@vanujiash9](https://github.com/vanujiash9)
+
+---
+
+## Giấy phép
+
+Dự án được phát hành theo giấy phép [MIT](LICENSE).
+
+<div align="center">
+
+Được xây dựng bằng **Python, PyTorch, Gemma 2, FAISS và Gradio**.
+
+Nếu dự án hữu ích, hãy để lại một ⭐ để ủng hộ.
+
+</div>
+
 - 📧 Email: [thanh.van19062004@gmail.com](mailto:thanh.van19062004@gmail.com)  
 - 💻 GitHub: [@vanujiash9](https://github.com/vanujiash9)
 
